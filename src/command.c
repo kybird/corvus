@@ -745,6 +745,7 @@ int cmd_forward(struct command *cmd, struct redis_data *data)
     switch (cmd->request_type) {
         case CMD_BASIC:
             cmd->slot = cmd_get_slot(data);
+			LOG(DEBUG,"Command:%d Slot:%d", cmd->request_type, cmd->slot);
             return cmd_forward_basic(cmd);
         case CMD_COMPLEX:
             return cmd_forward_complex(cmd, data);
