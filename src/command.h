@@ -146,7 +146,15 @@
     HANDLER(SLOWLOG,           EXTRA,    UNKNOWN) \
     HANDLER(QUIT,              EXTRA,    UNKNOWN) \
     HANDLER(SELECT,            UNIMPL,   UNKNOWN) \
-    HANDLER(TIME,              EXTRA,    UNKNOWN)
+    HANDLER(TIME,              EXTRA,    UNKNOWN) \
+	HANDLER(WATCH, 			   EXTRA,    UNKNOWN) \
+	HANDLER(MULTI, 			   EXTRA, 	 UNKNOWN) \
+	HANDLER(UNWATCH, 		   EXTRA,    UNKNOWN) \
+	HANDLER(EXEC, 			   EXTRA, 	 UNKNOWN) \
+	HANDLER(DISCARD, 		   EXTRA,  	 UNKNOWN)
+	
+	
+	
 
 #define CMD_DEFINE(cmd, type, access) CMD_##cmd,
 
