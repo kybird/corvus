@@ -55,6 +55,8 @@ struct cmd_item cmds[] = {CMD_DO(CMD_BUILD_MAP)};
 const size_t CMD_NUM = sizeof(cmds) / sizeof(struct cmd_item);
 static struct dict command_map;
 
+int cmd_trans(struct command *cmd, struct redis_data *data);
+int watchslot = -1;
 
 const char *cmd_extract_prefix(const char *prefix)
 {
@@ -231,7 +233,10 @@ int cmd_trans(struct command *cmd, struct redis_data *data)
 			return cmd_exec(cmd);
 		case CMD_DISCARD:
 			return cmd_discard(cmd);
+		default:
+			return CORVUS_ERR;
 	}
+	return CORVUS_OK;
 }
 
 
@@ -248,7 +253,7 @@ int cmd_multi(struct command *cmd)
 
 // is this thread? 
 // if then. what can i do
-int watchslot = -1;
+
 
 int cmd_watch(struct command *cmd, struct redis_data *data)
 {
