@@ -228,7 +228,7 @@ int cmd_trans(struct command *cmd, struct redis_data *data)
 		case CMD_WATCH:
 			return cmd_watch(cmd, data);
 		case CMD_UNWATCH:
-			return cmd_watch(cmd);
+			return cmd_unwatch(cmd);
 		case CMD_EXEC:
 			return cmd_exec(cmd);
 		case CMD_DISCARD:
@@ -257,7 +257,7 @@ int cmd_multi(struct command *cmd)
 
 int cmd_watch(struct command *cmd, struct redis_data *data)
 {
-	if(watchslot != -1)
+	if(watchslot == -1)
 	{
 		cmd->slot = cmd_get_slot(data);
 		watchslot = cmd->slot;
