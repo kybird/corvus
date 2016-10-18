@@ -216,6 +216,86 @@ void cmd_add_fragment(struct command *cmd, struct pos_array *data,
     conn_add_data(cmd->client, (uint8_t*)"\r\n", 2, NULL, end);
 }
 
+
+
+int cmd_trans(struct command *cmd, struct redis_data *data)
+{
+    switch (cmd->cmd_type) {
+        case CMD_MULTI:
+            return cmd_ping(cmd);
+		case CMD_WATCH:
+			return cmd_watch(cmd, data);
+		case CMD_UNWATCH:
+			return cmd_watch(cmd);
+		case CMD_EXEC:
+			return cmd_exec(cmd);
+		case CMD_DISCARD:
+			return cmd_discard(cmd);
+	}
+}
+
+
+
+int cmd_multi(struct command *cmd)
+{
+	if(watchslot != -1)
+	{
+		cmd->slot = watchslot;
+		return cmd_forward_basic(cmd);	
+	}
+	return CORVUS_ERR;
+}
+
+// is this thread? 
+// if then. what can i do
+int watchslot = -1;
+
+int cmd_watch(struct command *cmd, struct redis_data *data)
+{
+	if(watchslot != -1)
+	{
+		cmd->slot = cmd_get_slot(data);
+		watchslot = cmd->slot;
+		return cmd_forward_basic(cmd);
+	}
+	return CORVUS_ERR;
+}
+
+int cmd_unwatch(struct command *cmd)
+{
+	if(watchslot != -1)
+	{
+	
+		cmd->slot = watchslot;
+		return cmd_forward_basic(cmd);
+	}
+	return CORVUS_ERR;
+}
+
+
+int cmd_discard(struct command *cmd)
+{
+	if (watchslot != -1)
+	{
+		cmd->slot = watchslot;
+		return cmd_forward_basic(cmd);
+	}
+	return CORVUS_ERR;
+}
+
+int cmd_exec(struct command *cmd)
+{
+	if (watchslot != -1)
+	{
+		cmd->slot = watchslot;
+		watchslot = -1;
+		return cmd_forward_basic(cmd);
+	}
+	return CORVUS_ERR;
+}
+		
+		
+
 int cmd_forward_basic(struct command *cmd)
 {
     int slot;
@@ -751,6 +831,8 @@ int cmd_forward(struct command *cmd, struct redis_data *data)
             return cmd_forward_complex(cmd, data);
         case CMD_EXTRA:
             return cmd_extra(cmd, data);
+		case CMD_TRANS:
+			return cmd_trans(cmd, data);
         case CMD_UNIMPL:
             return CORVUS_ERR;
     }
